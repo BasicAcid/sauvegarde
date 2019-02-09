@@ -12,3 +12,12 @@ appel de cette commande il est necessaire d'utiliser une paire de
 clés ssh. De plus, la connection entre les deux machines est effectuée
 en root (bien que cela ne soit pas recommandé cela nous a paru
 acceptable dans le cadre de l'exercice).
+
+Nous utiliseront le fichier de configuration suivant
+(/root/.ssh/config):
+
+Host backup
+	User root
+	Port 22
+	Hostname 192.168.33.201
+	IdentityFile ~/.ssh/backup-server-key
