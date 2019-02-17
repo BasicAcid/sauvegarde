@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # =======================================================================================================================
-# WARNING: this script first delete every data under the /nextcloud directory, be sure to have a backup before using it
+# WARNING: this script first delete every data under the /nextcloud directory, be sure to make a backup before using it
 # =======================================================================================================================
 
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
@@ -25,6 +25,9 @@ mysql -u root -proot -e "CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE
 
 # Import data from backup
 mysql -u root -proot nextcloud < $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
+
+# Delete dump
+rm $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
 
 # Turn maintenance mode OFF
 sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --off
