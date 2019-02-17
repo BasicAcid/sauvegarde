@@ -11,8 +11,8 @@ rm -r $NEXTCLOUD_DIR
 # Drop previous database
 mysql -u root -proot -e "DROP DATABASE nextcloud"
 
-# get last modified directory
-LAST_DIR=ssh backup "ls -t /root/backups/nextcloud/ | head -n 1"
+# get last backup
+LAST_DIR=$(ssh backup "ls -t /root/backups/nextcloud/ | head -n 1")
 
 rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR /var/www/html/
 
