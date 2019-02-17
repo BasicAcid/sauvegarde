@@ -2,6 +2,8 @@
 ## General
 - Make a unified script
 - add comments
+- better readme
+- way to use it without being root
 - do not use maintenance mode + provide a way to select hot or normal backup (use binary log https://www.vpsinfo.com/tutorial/backup-mysql-database/)
 
 ## restore.sh
