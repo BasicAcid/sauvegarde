@@ -6,7 +6,7 @@
 
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
 
-rm -r $NEXTCLOUD_DIR/*
+rm -r $NEXTCLOUD_DIR
 
 # Drop previous database
 mysql -u root -proot -e "DROP DATABASE nextcloud"
@@ -14,11 +14,9 @@ mysql -u root -proot -e "DROP DATABASE nextcloud"
 # get last modified directory
 LAST_DIR=ssh backup "ls -t /root/backups/nextcloud/ | head -n 1"
 
-rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR $NEXTCLOUD_DIR/
+rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR /var/www/html/
 
-mv $NEXTCLOUD_DIR/$LAST_DIR $NEXTCLOUD_DIR
-
-rm -r $NEXTCLOUD_DIR/$LAST_DIR
+mv /var/www/html/$LAST_DIR $NEXTCLOUD_DIR
 
 sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
 
