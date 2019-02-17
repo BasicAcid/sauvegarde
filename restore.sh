@@ -16,9 +16,9 @@ LAST_DIR=ssh backup "ls -t /root/backups/nextcloud/ | head -n 1"
 
 rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR $NEXTCLOUD_DIR/
 
-mv /root/backups/nextcloud/$LAST_DIR/* /root/backups/nextcloud/
+mv $NEXTCLOUD_DIR/* $NEXTCLOUD_DIR
 
-rm -r /root/backups/nextcloud/$LAST_DIR
+rm -r $NEXTCLOUD_DIR/$LAST_DIR
 
 sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
 
