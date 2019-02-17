@@ -16,7 +16,7 @@ LAST_DIR=ssh backup "ls -t /root/backups/nextcloud/ | head -n 1"
 
 rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR $NEXTCLOUD_DIR/
 
-mv $NEXTCLOUD_DIR/* $NEXTCLOUD_DIR
+mv $NEXTCLOUD_DIR/$LAST_DIR $NEXTCLOUD_DIR
 
 rm -r $NEXTCLOUD_DIR/$LAST_DIR
 
