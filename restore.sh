@@ -6,20 +6,27 @@
 
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
 
-sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
-
 rm -r $NEXTCLOUD_DIR/*
-
-rsync -Aavxziptgo backup:/root/backups/nextcloud/$(ls -t | head -n 1) $NEXTCLOUD_DIR/
 
 # Drop previous database
 mysql -u root -proot -e "DROP DATABASE nextcloud"
+
+# get last modified directory
+LAST_DIR=ssh backup "ls -t /root/backups/nextcloud/ | head -n 1"
+
+rsync -Aavxziptgo backup:/root/backups/nextcloud/$LAST_DIR $NEXTCLOUD_DIR/
+
+mv /root/backups/nextcloud/$LAST_DIR/* /root/backups/nextcloud/
+
+rm -r /root/backups/nextcloud/$LAST_DIR
+
+sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
 
 # Create new database
 mysql -u root -proot -e "CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci"
 
 # Import data from backup
-mysql -u root -proot nextcloud < nextcloud-sqlbkp.bak
+mysql -u root -proot nextcloud < $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
 
 # Turn maintenance mode OFF
 sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --off
