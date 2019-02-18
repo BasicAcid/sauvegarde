@@ -1,6 +1,7 @@
 # TODO
 ## General
 - Make a unified script
+- compress data to save space
 - add comments
 - better readme
 - way to use it without being root
