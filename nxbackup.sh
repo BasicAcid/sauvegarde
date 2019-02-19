@@ -4,14 +4,17 @@ BACKUP_SERVER=backup
 
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
 
+# A lot of arguments to preserve files attributes
 RSYNC_COMMAND="rsync -Aavxziptgo"
 
 BACKUP_DIR="/root/backups"
 
 HELP="\nUsage: nxbackup.sh [OPTION...]\n
         -b, make a backup\n
-  	-r, restore a backup\n"
+  	-r, restore a backup\n
+	-h"
 
+# Colors
 GREEN='\033[1;32m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
@@ -33,8 +36,6 @@ done
 while getopts "brh" opt; do
     case $opt in
 	b)
-	    # Backup
-
 	    # Turn maintenance mode ON
 	    sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
 
@@ -57,79 +58,80 @@ while getopts "brh" opt; do
 	    ;;
 
 	r)
-	    # Restore
-
 	    # ===================================================================================================
 	    # WARNING: delete every data under the /nextcloud directory, be sure to make a backup before using it
 	    # ===================================================================================================
 
-	    # Prompt user, and read command line argument
-	    read -p "WARNING: this action will first delete any data under the /nextcloud directory, are you sure you want to continue ?" answer
-
 	    # Add backup presence verification
+	    if ssh backup '[ ! -d $BACKUP_DIR/nextcloud_`date +%Y-%m-%W` ]'
+	    then
+		{
+		    read -p "There is no backup for this week, are you sure you want to continue ?"input
+		    while true; do
+			case $input in
+			    [yY]* ) break;;
 
-	    while true
-	    do
-		case $answer in
-		    [yY]* )
+			    [nN]* ) exit
+				    break ;;
 
-			rm -r $NEXTCLOUD_DIR
+			    * )	echo "Y/N"
+				exit
+				break ;;
+			esac
+		    done
+		}
+	    else
 
-			# Drop previous database
-			mysql -u root -proot -e "DROP DATABASE nextcloud"
+		rm -r $NEXTCLOUD_DIR
 
-			# get last backup
-			LAST_DIR=$(ssh backup "ls -t $BACKUP_DIR | head -n 1")
+		# Drop previous database
+		mysql -u root -proot -e "DROP DATABASE nextcloud"
 
-			# Restore last backup
-			$RSYNC_COMMAND backup:$BACKUP_DIR/$LAST_DIR /var/www/html/
+		# get last backup
+		LAST_DIR=$(ssh backup "ls -t $BACKUP_DIR | head -n 1")
 
-			# Change backup name to default
-			mv /var/www/html/$LAST_DIR $NEXTCLOUD_DIR
+		# Restore last backup
+		$RSYNC_COMMAND backup:$BACKUP_DIR/$LAST_DIR /var/www/html/
 
-			# Turn maintenance mode ON
-			sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
+		# Change backup name to default
+		mv /var/www/html/$LAST_DIR $NEXTCLOUD_DIR
 
-			# Create new database
-			mysql -u root -proot -e "CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci"
+		# Turn maintenance mode ON
+		sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
 
-			# Import data from backup
-			mysql -u root -proot nextcloud < $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
+		# Create new database
+		mysql -u root -proot -e "CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci"
 
-			# Delete dump
-			rm $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
+		# Import data from backup
+		mysql -u root -proot nextcloud < $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
 
-			# Turn maintenance mode OFF
-			sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --off
+		# Delete dump
+		rm $NEXTCLOUD_DIR/nextcloud-sqlbkp_*
 
-			# update the systems data-fingerprint after a backup is restored
-			sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:data-fingerprint
+		# Turn maintenance mode OFF
+		sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --off
 
-			# rescan files
-			sudo -u www-data php $NEXTCLOUD_DIR/occ files:scan --all
+		# update the systems data-fingerprint after a backup is restored
+		sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:data-fingerprint
 
-			# cleanup files
-			sudo -u www-data php $NEXTCLOUD_DIR/occ files:cleanup
+		# rescan files
+		sudo -u www-data php $NEXTCLOUD_DIR/occ files:scan --all
 
-			exit
-			break ;;
+		# cleanup files
+		sudo -u www-data php $NEXTCLOUD_DIR/occ files:cleanup
+
+	    fi
+
+	    exit
+	    break ;;
 
 
-		    [nN]* ) exit
-			    break ;;
+	h) echo -e $HELP >&2
+	   exit
+	   break;;
 
-		    * )	echo "Y/N"
-			exit
-			break ;;
-
-	    	esac
-	    done
-
-	    h) echo -e $HELP >&2
-	       exit;;
-
-	       \?) echo -e $HELP >&2
-		   exit
-		   break;;
-	       esac
-	     done
+	\?) echo -e $HELP >&2
+	    exit
+	    break;;
+    esac
+done
