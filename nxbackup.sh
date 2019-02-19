@@ -112,22 +112,24 @@ while getopts "brh" opt; do
 			sudo -u www-data php $NEXTCLOUD_DIR/occ files:cleanup
 
 			exit
-			;;
+			break ;;
 
-		    [nN]* )
-			exit;;
 
-		    * )
-			echo "Y/N"; break ;;
-		esac
+		    [nN]* ) exit
+			    break ;;
+
+		    * )	echo "Y/N"
+			exit
+			break ;;
+
+	    	esac
 	    done
 
-	    h)
-	      echo -e $HELP >&2
-	      exit;;
+	    h) echo -e $HELP >&2
+	       exit;;
 
-	      \?)
-		  echo -e $HELP >&2
-		  ;;
-	      esac
-done
+	       \?) echo -e $HELP >&2
+		   exit
+		   break;;
+	       esac
+	     done
