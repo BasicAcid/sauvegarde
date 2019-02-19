@@ -40,6 +40,9 @@ Host backup
 	Hostname 192.168.33.201
 	IdentityFile ~/.ssh/backup-server-key
 
+### Mise en place du script
+_root@nextcloud$ git clone https://github.com/BasicAcid/Sauvegarde_
+
 ## Fonctionnement
 ### Backup
 Le script de backup fonctionne de telle sorte que seules les données
