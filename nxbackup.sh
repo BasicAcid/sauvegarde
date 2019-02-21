@@ -66,7 +66,7 @@ while getopts "brh" opt; do
 	    if ssh backup '[ ! -d $BACKUP_DIR/nextcloud_`date +%Y-%m-%W` ]'
 	    then
 		{
-		    read -p "There is no backup for this week, are you sure you want to continue ?"input
+		    read -p "There is no backup for this week, are you sure you want to continue ?" input
 		    while true; do
 			case $input in
 			    [yY]* ) break;;
