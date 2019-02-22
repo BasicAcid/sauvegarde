@@ -90,3 +90,14 @@ Il faut ensuite utiliser une seconde tâche pour supprimer la dernière
 backup à la fin de chaque mois:
 
 0 0 31 * * remove_old.sh
+
+## Note(s)
+J'avais initiallement prévu un script unifié mais il s'es avéré trop
+complexe a gérer en bash (gestion des flags notamment). Il peut
+cependant être trouvé dans les commits (non fonctionnel).
+
+Une meilleure solution serait de tout exécuter dans python avec
+os.system, et de gérer les flags avec argparse. Il faudrait aussi
+compresser les backups, et/ou utiliser zfs. Ce sont des solutions que
+je n'ai pas implémenté par manque de temps, car je voulais avant tout
+quelque chose de simple et fonctionnel.
