@@ -7,26 +7,26 @@
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
 BCK_HOST="backup"
 
-if ssh backup '[ ! -d /root/nextcloud_* ]'
+if ssh $BCK_HOST '[ ! -d /root/nextcloud_* ]'
 then
     echo "No backup present on the server, please make a backup before using this script" >&2
     exit 1
 fi
 
 # I also like to live dangerously
-rm -r $NEXTCLOUD_DIR
+rm -r $NEXTCLOUD_DIR/*
 
 # Drop previous database
 mysql -u root -proot -e "DROP DATABASE nextcloud"
 
 # get last backup
-LAST_DIR=$(ssh backup "ls -td */ /root/ | head -n 1")
+LAST_DIR=$(ssh $BCK_HOST "ls -tpd */ /root/ | sed 's#/##' | head -n 1")
 
 # sync
-rsync -Aavxziptgo $BCK_HOST:/root/$LAST_DIR /var/www/html/
+rsync -Aavxziptgo $BCK_HOST:/root/$LAST_DIR /var/www/html
 
 # rename into "nextcloud"
-mv /var/www/html/$LAST_DIR $NEXTCLOUD_DIR
+mv /var/www/html/$LAST_DIR /var/www/html/nextcloud
 
 # Turn maintenance mode ON
 sudo -u www-data php $NEXTCLOUD_DIR/occ maintenance:mode --on
