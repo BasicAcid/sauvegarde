@@ -43,6 +43,8 @@ Host backup
 ### Mise en place du script
 _root@nextcloud$ git clone https://github.com/BasicAcid/sauvegarde_
 
+Il faut ensuite éditer la macro "BCK_HOST" des scripts respectifs et remplacer la valeur par l'utilisateur et l'ip du serveur de backup, ex: root@192.168.33.201 (ou par le nom d'hote si un sshconfig est utilisé).
+
 ## Fonctionnement
 ### Backup
 Le script de backup fonctionne de telle sorte que seules les données
