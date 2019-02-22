@@ -7,6 +7,7 @@
 NEXTCLOUD_DIR="/var/www/html/nextcloud"
 BCK_HOST="backup"
 
+# Check that at least one backup exists before removing any data
 if ssh $BCK_HOST '[ ! -d /root/nextcloud_* ]'
 then
     echo "No backup present on the server, please make a backup before using this script" >&2

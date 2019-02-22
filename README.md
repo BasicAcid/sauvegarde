@@ -16,6 +16,7 @@ fréquemment possible et en mettent en application les bonnes pratiques
 Vous enverrez l’ensemble des scripts ainsi qu’une procédure simplifiée
 d’utilisation et de restauration de votre système par mail à l’adresse suivante:
 anthony@avalone-fr.com
+
 La date limite de remise est fixé au 22 février 2019.
 
 ## Notes concernant l'installation
@@ -34,16 +35,21 @@ acceptable dans le cadre de l'exercice).
 Nous utiliseront le fichier de configuration suivant
 (/root/.ssh/config):
 
+```
 Host backup
 	User root
 	Port 22
-	Hostname 192.168.33.201
+	Hostname 192.168.33.201 # Backup server ip address
 	IdentityFile ~/.ssh/backup-server-key
+```
 
-### Mise en place du script
-_root@nextcloud$ git clone https://github.com/BasicAcid/sauvegarde_
+## Mise en place du script
+> root@nextcloud:# git clone https://github.com/BasicAcid/sauvegarde
 
-Il faut ensuite éditer la macro "BCK_HOST" des scripts respectifs et remplacer la valeur par l'utilisateur et l'ip du serveur de backup, ex: root@192.168.33.201 (ou par le nom d'hote si un sshconfig est utilisé).
+Il faut ensuite éditer la variable "BCK_HOST" des scripts respectifs et
+remplacer la valeur par l'utilisateur et l'ip du serveur de backup,
+ex: root@192.168.33.201 (ou par le nom d'hote si un sshconfig est
+utilisé).
 
 ## Fonctionnement
 ### Backup
@@ -55,7 +61,24 @@ lors d'un chagement de semaine).
 Nous utilisons la commande "date" pour récupérer une valeur unique se
 rapportant à la semaine courante (numéro de la semaine dans l'année).
 
-#### Automatisation
+### Restauration
+Le script de restauration commence par supprimer toutes les données
+relatives à l'instance, des fichiers à la base de donnée. Il vérifie
+cependant qu'il existe au moins une backup sur le serveur, et dans le
+cas contraire renvoie un exit 1 avant toute suppression.
+
+Il va ensuite transvaser via rsync la backup la plus récente, puis
+créer une nouvelle database vide, et enfin importer le dump.
+
+Des commandes occ de scan et de checks supplémentaires sont ensuite
+lancées.
+
+### Remove_old
+Ce script supprime la plus vieille backup en date présente sur le
+serveur, il suffit donc de l'automatiser pour qu'elle s'exécute tous
+les mois (voir plus bas).
+
+### Automatisation
 Étant donné que le nom de backup change en fonction des semaine, il
 suffit de mettre en place une tache cron tous les jours pour répondre
 à la problématique, car une sauvegarde complète sera effectuée à
@@ -67,13 +90,3 @@ Il faut ensuite utiliser une seconde tâche pour supprimer la dernière
 backup à la fin de chaque mois:
 
 0 0 31 * * remove_old.sh
-
-# Restauration
-Le script de restauration commence par supprimer toutes les données
-relatives à l'instance, des fichiers à la base de donnée.
-
-Il va ensuite transvaser via rsync la backup la plus récente, puis
-créer une nouvelle database vide, et enfin importer le dump.
-
-Des commandes occ de scan et de checks supplémentaires sont ensuite
-lancées.
