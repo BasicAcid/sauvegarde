@@ -41,7 +41,7 @@ Host backup
 	IdentityFile ~/.ssh/backup-server-key
 
 ### Mise en place du script
-_root@nextcloud$ git clone https://github.com/BasicAcid/Sauvegarde_
+_root@nextcloud$ git clone https://github.com/BasicAcid/sauvegarde_
 
 ## Fonctionnement
 ### Backup

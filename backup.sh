@@ -13,7 +13,7 @@ sudo rsync -Aavxziptgo $NEXTCLOUD_DIR/ $BCK_HOST:/root/nextcloud_`date +%Y-%m-%W
 sudo mysqldump --single-transaction -u root -proot nextcloud > /root/nextcloud-sqlbkp_`date +%Y-%m-%W`.bak
 
 # Syncronize the dump with the BCK_HOST server
-sudo rsync -Aavxziptgo /root $BCK_HOST:/root/nextcloud_`date +%Y-%m-%W`/
+sudo rsync -Aavxziptgo /root/*.bak $BCK_HOST:/root/nextcloud_`date +%Y-%m-%W`/
 
 # Delete the local dump
 rm /root/*.bak
