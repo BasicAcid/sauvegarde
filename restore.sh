@@ -14,13 +14,13 @@ then
 fi
 
 # I also like to live dangerously
-rm -r $NEXTCLOUD_DIR/*
+rm -r $NEXTCLOUD_DIR
 
 # Drop previous database
 mysql -u root -proot -e "DROP DATABASE nextcloud"
 
 # get last backup
-LAST_DIR=$(ssh $BCK_HOST "ls -tpd */ /root/ | sed 's#/##' | head -n 1")
+LAST_DIR=$(ssh $BCK_HOST "ls -td */ /root/ | sed 's#/##' | head -n 1")
 
 # sync
 rsync -Aavxziptgo $BCK_HOST:/root/$LAST_DIR /var/www/html
